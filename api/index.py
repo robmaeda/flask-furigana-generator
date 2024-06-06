@@ -1,19 +1,21 @@
 from flask import Flask, request, jsonify
+import tinysegmenter
 import pykakasi
 
 app = Flask(__name__)
+segmenter = tinysegmenter.TinySegmenter()
 kks = pykakasi.kakasi()
 
 def process_text(text):
+    tokenized_statement = segmenter.tokenize(text)
     output = ""
-    converted_text = kks.convert(text)
-    for phrase in converted_text:
-        original = phrase["orig"]
-        hiragana = phrase["hira"]
-        if original != hiragana:
-            output += f"<ruby>{original}<rt>{hiragana}</rt></ruby>"
+    for token in tokenized_statement:
+        token_dict = kks.convert(token)
+        hiragana = token_dict[0]["hira"]
+        if token != hiragana:
+            output += f"<ruby>{token}<rt>{hiragana}</rt></ruby>"
         else:
-            output += original
+            output += token
     return output
 
 @app.route('/furigana', methods=['POST'])
@@ -21,7 +23,6 @@ def furigana():
     if request.is_json:
         text = request.json['text']
         result = process_text(text)
-        print(result)
         return jsonify({'result': result})
     else:
         return "Invalid or missing JSON", 400
