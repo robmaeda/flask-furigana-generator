@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import tinysegmenter
 import pykakasi
 
@@ -18,6 +19,7 @@ def process_text(text):
             output += token
     return output
 
+CORS(app, resources={r"/api/*": {"origins": "https://react-furigana-generator.vercel.app/"}})
 @app.route('/furigana', methods=['POST'])
 def furigana():
     if request.is_json:
