@@ -19,7 +19,7 @@ def process_text(text):
             output += token
     return output
 
-CORS(app, resources={r"/api/*": {"origins": "https://react-furigana-generator.vercel.app/"}})
+CORS(app, resources={r"/api/*": {"origins": "https://react-furigana-generator.vercel.app"}})
 @app.route('/furigana', methods=['POST'])
 def furigana():
     if request.is_json:
